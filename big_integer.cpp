@@ -140,7 +140,7 @@ big_integer &big_integer::operator*=(big_integer const &rhs) {
             size_t k = i + j;
             if (k == this->data.size()) this->data.push_back(0);
             uint64_t
-            tmp2 = (uint64_t)
+                    tmp2 = (uint64_t)
             this->data[k] + t;
             addcarry = tmp2 >> DEGREEBASE;
             tmp2 = tmp2 - (addcarry << DEGREEBASE);
@@ -160,7 +160,7 @@ big_integer &big_integer::operator*=(big_integer const &rhs) {
         while (mulcarry != 0) {
             if (k == this->data.size()) this->data.push_back(0);
             uint64_t
-            tmp2 = (uint64_t)
+                    tmp2 = (uint64_t)
             this->data[k] + mulcarry;
             mulcarry = tmp2 >> DEGREEBASE;
             this->data[k] = tmp2 - (mulcarry << DEGREEBASE);
@@ -175,6 +175,12 @@ big_integer &big_integer::operator*=(big_integer const &rhs) {
 big_integer &big_integer::operator/=(big_integer const &rhs) {
     if (this->compare_by_abs(rhs) < 0) {
         return *this = big_integer(0);
+    }
+    if (rhs.data.size() == 1) {
+        this->sign = this->sign == rhs.sign;
+        uint64_t temp = rhs.data[0];
+        this->div_long_short(temp);
+        return * this;
     }
     big_integer del = big_integer(rhs);
     bool sign = this->sign == rhs.sign;
@@ -417,7 +423,7 @@ std::string to_string(big_integer const &a) {
     big_integer x(a);
     std::string res = "";
     while (!x.is_zero()) {
-        int digit = x.div_long_ten();
+        int digit = x.div_long_short(10);
         res.push_back(static_cast<char>(digit) + (char) '0');
     }
     while (res[res.size() - 1] == '0') {
@@ -489,8 +495,6 @@ big_integer &big_integer::binaryOp(big_integer const &other, uint64_t (*f)(uint6
     if ((*f)((uint64_t)
     !other.sign, (uint64_t)
     !this->sign)) *this = first.flip();
-    if (second.data.size() > first.data.size()) first.data.resize(second.data.size());
-    if (second.data.size() < first.data.size()) second.data.resize(first.data.size());
     remove_zeroes();
     return *this;
 }
@@ -546,26 +550,19 @@ void big_integer::remove_zeroes() {
 }
 
 //Returns remainder
-uint64_t big_integer::div_long_ten() {
+uint64_t big_integer::div_long_short(uint64_t x) {
     uint64_t carry = 0;
     for (size_t i = this->data.size(); i > 0; --i) {
         uint64_t temp = (this->data[i - 1]) + carry * BASE;
-        this->data[i - 1] = (temp / (uint64_t) 10);
-        carry = temp % (uint64_t) 10;
+        this->data[i - 1] = (temp / (uint64_t) x);
+        carry = temp % (uint64_t) x;
     }
-
     remove_zeroes();
     return (carry);
 }
-//
+
 //int main() {
-//    big_integer b1("28374611011345671");
-//    big_integer c1(123456543);
-//    big_integer b2("283746110111");
-//    big_integer c2("-123456543");
-//    big_integer b3("-283746110111");
-//    big_integer c3("123456543");
-//    big_integer b4("-283746110111");
-//    big_integer c4("-123456543");
-//    std::cout << b1<< ' ' << c1 << "\n";
+//    big_integer b1("2000000000000000000000000000000000");
+//    big_integer c1(1000);
+//    std::cout << b1 << ' ' << b1/c1  << "\n";
 //}

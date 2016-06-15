@@ -61,8 +61,8 @@ private:
     int compare_to(big_integer const& other) const;
     int compare_by_abs(big_integer const &other) const;
     bool is_zero() const;
-    inline uint64_t div_long_ten();
-}   ;
+    uint64_t div_long_short(uint64_t x);
+};
 
 big_integer operator+(big_integer a, big_integer const& b);
 big_integer operator-(big_integer a, big_integer const& b);
