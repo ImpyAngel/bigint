@@ -472,6 +472,7 @@ bool big_integer::is_zero() const {
     return (this->data.size() == 1 && this->data[0] == 0);
 }
 
+
 big_integer &big_integer::binaryOp(big_integer const &other, uint64_t (*f)(uint64_t first, uint64_t second)) {
     big_integer first = big_integer(*this);
     big_integer second = big_integer(other);
