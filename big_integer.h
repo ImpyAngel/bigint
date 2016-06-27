@@ -49,19 +49,24 @@ struct big_integer
 private:
     bool sign;
     std::vector <uint64_t> data;
-    inline friend big_integer mul_long_short(big_integer const & first, uint64_t x);
+
     const static uint8_t DEGREEBASE = 30;
     const static uint64_t BASE = static_cast<uint64_t>(1 << DEGREEBASE);
-    big_integer& flip();
-    inline big_integer& unsigned_add(big_integer const& other);
-    inline big_integer& unsigned_sub(big_integer const& rhs, bool reverse = false);
+
+    friend big_integer mul_long_short(big_integer const & first, uint64_t x) ;
+    big_integer& unsigned_add(big_integer const& other);
+    big_integer& unsigned_sub(big_integer const& rhs, bool reverse = false);
+    big_integer& add_long_short(uint64_t);
+    inline uint64_t div_long_short(uint64_t x);
+
     big_integer& binaryOp(big_integer const & other, uint64_t (* f)(uint64_t first, uint64_t second));
+    inline big_integer& flip();
+
     inline void remove_zeroes();
-    inline big_integer& add_long_short(uint64_t);
     int compare_to(big_integer const& other) const;
     int compare_by_abs(big_integer const &other) const;
-    bool is_zero() const;
-    uint64_t div_long_short(uint64_t x);
+    inline bool is_zero() const;
+
 };
 
 big_integer operator+(big_integer a, big_integer const& b);

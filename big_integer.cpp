@@ -139,9 +139,7 @@ big_integer &big_integer::operator*=(big_integer const &rhs) {
             if (j == 0) this->data[i] = 0;
             size_t k = i + j;
             if (k == this->data.size()) this->data.push_back(0);
-            uint64_t
-                    tmp2 = (uint64_t)
-            this->data[k] + t;
+            uint64_t tmp2 = static_cast<uint64_t>(this->data[k] + t);
             addcarry = tmp2 >> DEGREEBASE;
             tmp2 = tmp2 - (addcarry << DEGREEBASE);
 
@@ -150,7 +148,7 @@ big_integer &big_integer::operator*=(big_integer const &rhs) {
             while (addcarry != 0) {
                 k++;
                 if (k == this->data.size()) this->data.push_back(0);
-                tmp2 = (uint64_t)this->data[k] + addcarry;
+                tmp2 = static_cast<uint64_t> (this->data[k] + addcarry);
                 addcarry = tmp2 >> DEGREEBASE;
                 this->data[k] = tmp2 - (addcarry << DEGREEBASE);
             }
@@ -159,9 +157,7 @@ big_integer &big_integer::operator*=(big_integer const &rhs) {
         size_t k = i + rhs.data.size();
         while (mulcarry != 0) {
             if (k == this->data.size()) this->data.push_back(0);
-            uint64_t
-                    tmp2 = (uint64_t)
-            this->data[k] + mulcarry;
+            uint64_t tmp2 = static_cast<uint64_t> (this->data[k] + mulcarry);
             mulcarry = tmp2 >> DEGREEBASE;
             this->data[k] = tmp2 - (mulcarry << DEGREEBASE);
             k++;
@@ -171,16 +167,17 @@ big_integer &big_integer::operator*=(big_integer const &rhs) {
 
     return *this;
 }
-
+big_integer zero = big_integer(0);
+big_integer one = big_integer(1);
 big_integer &big_integer::operator/=(big_integer const &rhs) {
     if (this->compare_by_abs(rhs) < 0) {
-        return *this = big_integer(0);
+        return *this = zero;
     }
     if (rhs.data.size() == 1) {
         this->sign = this->sign == rhs.sign;
         uint64_t temp = rhs.data[0];
         this->div_long_short(temp);
-        return * this;
+        return *this;
     }
     big_integer del = big_integer(rhs);
     bool sign = this->sign == rhs.sign;
@@ -264,9 +261,9 @@ big_integer &big_integer::operator^=(big_integer const &rhs) {
 big_integer &big_integer::operator<<=(int rhs) {
     uint64_t first = static_cast<uint64_t>(rhs / DEGREEBASE);
     uint64_t second = static_cast<uint64_t>(rhs) - (first * DEGREEBASE);
-    if (*this == big_integer(0)) return *this;
+    if (*this == zero) return *this;
     if (!this->sign) {
-        *this -= big_integer(1);
+        *this -= one;
     }
     big_integer before(*this);
     this->data.resize(before.data.size() + first);
@@ -276,8 +273,8 @@ big_integer &big_integer::operator<<=(int rhs) {
             this->data[i] = 0;
         } else {
             uint64_t temp = before.data[i - first] << second;
-            uint64_t tempCarry = static_cast<uint64_t>(temp >> DEGREEBASE);
-            uint64_t tempReal = static_cast<uint64_t>(temp - (tempCarry << DEGREEBASE));
+            uint64_t tempCarry = temp >> DEGREEBASE;
+            uint64_t tempReal = temp - (tempCarry << DEGREEBASE);
             this->data[i] = tempReal + carry;
             carry = tempCarry;
         }
@@ -286,7 +283,7 @@ big_integer &big_integer::operator<<=(int rhs) {
         this->data.push_back(carry);
     }
     if (!this->sign) {
-        *this += big_integer(1);
+        *this += one;
     }
     return *this;
 }
@@ -295,12 +292,12 @@ big_integer &big_integer::operator>>=(int rhs) {
     uint64_t first = static_cast<uint64_t>(rhs / DEGREEBASE);
     uint64_t second = static_cast<uint64_t>(rhs) - (first * DEGREEBASE);
     if (!this->sign) {
-        *this += big_integer(1);
+        *this += one;
     }
     big_integer before(*this);
     for (size_t i = 0; i < first && !this->data.empty(); i++) this->data.pop_back();
     if (this->data.empty()) {
-        *this = big_integer(0);
+        *this = zero;
     } else {
         uint64_t carry = 0;
         for (int i = ((this->data.size()) - 1); i >= 0; i--) {
@@ -310,7 +307,7 @@ big_integer &big_integer::operator>>=(int rhs) {
         }
     }
     if (!this->sign) {
-        *this -= big_integer(1);
+        *this -= one;
     }
     return *this;
 }
@@ -492,9 +489,7 @@ big_integer &big_integer::binaryOp(big_integer const &other, uint64_t (*f)(uint6
         first.data[i] = (*f)(first.data[i], second.data[i]);
     }
     *this = first;
-    if ((*f)((uint64_t)
-    !other.sign, (uint64_t)
-    !this->sign)) *this = first.flip();
+    if ((*f)(static_cast<uint64_t>(!other.sign), static_cast<uint64_t>(!this->sign))) *this = first.flip();
     remove_zeroes();
     return *this;
 }
@@ -506,16 +501,15 @@ big_integer &big_integer::flip() {
     return *this;
 }
 
-big_integer &big_integer::add_long_short(uint64_t x) {
+big_integer &big_integer::add_long_short(uint64_t const x) {
     uint64_t tmp, carry = 0;
-    tmp = (uint64_t)
-    this->data[0] + (uint64_t) x;
+    tmp = this->data[0] +  x;
     carry = tmp / BASE;
     this->data[0] = (tmp % BASE);
     size_t k = 1;
     while (carry != 0) {
         if (k == this->data.size()) data.push_back(0);
-        tmp = (uint64_t) data[k] + carry;
+        tmp = this->data[k] + carry;
         carry = tmp / BASE;
         data[k] = (tmp % BASE);
         k++;
@@ -523,11 +517,11 @@ big_integer &big_integer::add_long_short(uint64_t x) {
     return *this;
 }
 
-big_integer mul_long_short(big_integer const &first, uint64_t x) {
+big_integer mul_long_short(big_integer const &first, uint64_t const x) {
     uint64_t tmp, carry = 0;
     big_integer ans = big_integer(first);
     for (size_t i = 0; i < first.data.size(); i++) {
-        tmp = (uint64_t) first.data[i] * (uint64_t) x + carry;
+        tmp = first.data[i] *  x + carry;
         carry = tmp >> big_integer::DEGREEBASE;
         ans.data[i] = (tmp - (carry << big_integer::DEGREEBASE));
 
@@ -535,7 +529,7 @@ big_integer mul_long_short(big_integer const &first, uint64_t x) {
     size_t k = first.data.size();
     while (carry != 0) {
         if (k == ans.data.size()) ans.data.push_back(0);
-        tmp = (uint64_t) ans.data[k] + carry;
+        tmp =  ans.data[k] + carry;
         carry = tmp >> big_integer::DEGREEBASE;
         ans.data[k] = (tmp - (carry << big_integer::DEGREEBASE));
         k++;
@@ -549,20 +543,13 @@ void big_integer::remove_zeroes() {
     }
 }
 
-//Returns remainder
 uint64_t big_integer::div_long_short(uint64_t x) {
     uint64_t carry = 0;
     for (size_t i = this->data.size(); i > 0; --i) {
         uint64_t temp = (this->data[i - 1]) + carry * BASE;
-        this->data[i - 1] = (temp / (uint64_t) x);
-        carry = temp % (uint64_t) x;
+        this->data[i - 1] = (temp / x);
+        carry = temp %  x;
     }
     remove_zeroes();
     return (carry);
 }
-
-//int main() {
-//    big_integer b1("2000000000000000000000000000000000");
-//    big_integer c1(1000);
-//    std::cout << b1 << ' ' << b1/c1  << "\n";
-//}
