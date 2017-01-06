@@ -1,10 +1,12 @@
 #include "big_integer.h"
 
 #include <cstring>
+#include <cstddef>
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
 #include <stdint.h>
+
 
 big_integer::big_integer() {
     sign = true;
@@ -49,7 +51,6 @@ big_integer::big_integer(std::string const &str) : big_integer() {
 }
 
 big_integer::~big_integer() {
-    this->data.clear();
 }
 
 big_integer &big_integer::operator=(big_integer const &other) {
@@ -181,7 +182,7 @@ big_integer &big_integer::operator/=(big_integer const &rhs) {
     }
     big_integer del = big_integer(rhs);
     bool sign = this->sign == rhs.sign;
-    std::vector<uint64_t> ans;
+    my_vector<uint64_t> ans;
     uint64_t m = rhs.data.size();
     big_integer temp = big_integer();
     this->sign = true;
@@ -215,7 +216,7 @@ big_integer &big_integer::operator/=(big_integer const &rhs) {
             temp.add_long_short(this->data[--j]);
         } else break;
     }
-    std::reverse(ans.begin(), ans.end());
+    ans.reverse();
     this->data = ans;
     this->sign = sign;
     remove_zeroes();
@@ -554,3 +555,7 @@ uint64_t big_integer::div_long_short(uint64_t x) {
     remove_zeroes();
     return (carry);
 }
+// int main() {
+//     auto a = big_integer(10000);
+//     a = a * a * a;
+// }

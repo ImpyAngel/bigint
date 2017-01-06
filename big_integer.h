@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 #include <stdint.h>
-#include <vector>
+#include "my_vector.h"
 #include <limits>
 struct big_integer
 {
@@ -48,7 +48,7 @@ struct big_integer
     friend std::string to_string(big_integer const& a);
 private:
     bool sign;
-    std::vector <uint64_t> data;
+    my_vector<uint64_t> data;
 
     const static uint8_t DEGREEBASE = 30;
     const static uint64_t BASE = static_cast<uint64_t>(1 << DEGREEBASE);

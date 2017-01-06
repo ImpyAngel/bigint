@@ -6,6 +6,7 @@ include_directories(${BIGINT_SOURCE_DIR})
 
 add_executable(big_integer_testing
         big_integer.h
+        my_vector.h
         big_integer.cpp
         big_integer_testing.cpp
         gtest/gtest-all.cc
