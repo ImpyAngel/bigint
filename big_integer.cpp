@@ -556,6 +556,7 @@ uint64_t big_integer::div_long_short(uint64_t x) {
     return (carry);
 }
 // int main() {
-//     auto a = big_integer(10000);
-//     a = a * a * a;
+//     auto a = big_integer("100000000000000000000000000000");
+//     auto b = big_integer(1);
+//     std::cout << (a + b == b * a);
 // }

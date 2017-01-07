@@ -11,8 +11,8 @@ template <typename T>
 class my_vector {
 
 private:
-	size_t sizes;
-	T small;
+	size_t sizes = 0;
+	T small = 0;
 	std::shared_ptr<std::vector<T>> ptr;
 	
 	void copy_optimization() {
@@ -42,7 +42,7 @@ public:
 	}
 
 	my_vector<T>& operator =(const my_vector& rhs) {
-		this->sizes = sizes;
+		this->sizes = rhs.sizes;
 		if (rhs.sizes <= 1) {
 			this->small  = rhs.small;
 		} else {
@@ -53,7 +53,9 @@ public:
 
 	T& operator[](size_t num) {
 		copy_optimization();
-		assert(sizes > num);
+		// if (sizes <= num)
+		 // std::cout << this->size() <<  ' ' <<sizes << ' ' << num << '\n';
+		 assert(sizes > num);
 		if (sizes > 1) {
 			return (*ptr)[num];
 		} else {
@@ -62,6 +64,7 @@ public:
 	}
 
 	T operator[](size_t num) const {
+		// if (sizes <= num) std::cout << sizes << ' ' << num << '\n';
 		assert(sizes > num);
 		if (sizes > 1) {
 			return (*ptr)[num];
